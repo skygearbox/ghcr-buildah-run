@@ -46,3 +46,42 @@ jobs:
             podman rm f
             podman rmi f:$n
           done
+  publish-bookworm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: checkout build scripts
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.actor }}/private-buildah-images
+          path: ./private-buildah-images
+          ssh-key: ${{ secrets.PRIVATE_BUILDAH_IMAGES }}
+      - name: build
+        run: |
+          cd ./private-buildah-images
+          for n in bookworm bookworm-gui bookworm-lxde bookworm-xfce bookworm-desktop bookworm-xfce-desktop; do
+            echo $n
+            ./build.sh $n
+          done
+      - name: push to docker.io
+        run: |
+          podman login -u ${{ secrets.DCKR_USER }} -p ${{ secrets.DCKR_PAT }} docker.io
+          for n in bookworm bookworm-gui bookworm-lxde bookworm-xfce bookworm-desktop bookworm-xfce-desktop; do
+            echo $n
+            podman push repo:$n docker://docker.io/${{ secrets.DCKR_USER }}/ghcr:$n
+          done
+      - name: push to docker.io f
+        run: |
+          podman login -u ${{ secrets.DCKR_USER }} -p ${{ secrets.DCKR_PAT }} docker.io
+          for n in bookworm-desktop bookworm-xfce-desktop; do
+            echo $n
+            podman create --name f repo:$n
+            podman export f | podman import - f:$n
+            podman push f:$n docker://docker.io/${{ secrets.DCKR_USER }}/ghcr-f:$n
+            podman rm f
+            podman rmi f:$n
+          done
