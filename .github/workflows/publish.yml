@@ -14,9 +14,9 @@ jobs:
       packages: write
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: checkout build scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.actor }}/private-buildah-images
           path: ./private-buildah-images
@@ -53,9 +53,9 @@ jobs:
       packages: write
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: checkout build scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.actor }}/private-buildah-images
           path: ./private-buildah-images
